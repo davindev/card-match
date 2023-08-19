@@ -151,13 +151,13 @@ struct GameView: View {
           ProgressView(value: progress)
             .padding(.horizontal)
         }
-        
+
         ForEach(cards, id: \.id) { card in
           Button(action: {
             handleFlipOneCardFrontSide(currentCard: card)
           }) {
             if card.isFlipped {
-              Text("Value: \(card.value)")
+              Image(card.value)
             } else {
               Text("뒷면")
             }
