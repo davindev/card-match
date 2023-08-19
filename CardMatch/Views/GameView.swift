@@ -8,73 +8,53 @@
 import SwiftUI
 
 struct GameView: View {
-  // 게임 시작 전 3초 카운트다운 실행
   @State private var countdown = 3
 
-  private func handleCountdown() {
-    Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { timer in
-      if countdown  > 0 {
-        countdown -= 1
-      } else {
-        timer.invalidate()
-        flipAllCards()
-        handleProgress()
-      }
-    })
-  }
-
-  // 남은 시간을 progress bar로 표시
-  private let totalTime = 120.0 // 2분
-  @State private var remainingTime = 120.0
+  private let totalTime = 60 * 2
+  @State private var remainingTime = 60 * 2
   @State private var progress = 1.0
 
-  private func handleProgress() {
-    Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { timer in
-      if remainingTime > 0 {
-        remainingTime -= 1
-        progress = remainingTime / totalTime
-      } else {
-        timer.invalidate()
+  @State private var cards = CardMatch.cards
+
+  // 게임 시작 카운트다운
+  private func handleCountdown() {
+    CardMatch.timer(time: countdown) {
+      countdown -= 1
+      
+      if countdown == 0 {
+        handleFlipAllCardsBackSide()
+        handleProgress()
       }
-    })
+    }
   }
-  
-  // 카드 목록 생성
-  struct Card {
-    let id: Int
-    let value: String
-    var isFlipped: Bool
-    var isMatched: Bool
+
+  // 남은 시간을 Progress Bar로 표시
+  private func handleProgress() {
+    CardMatch.timer(time: totalTime) {
+      remainingTime -= 1
+      progress = Double(remainingTime) / Double(totalTime)
+    }
   }
-  
-  @State private var cards = [
-    Card(id: 0, value: "🐶", isFlipped: true, isMatched: false),
-    Card(id: 1, value: "🐶", isFlipped: true, isMatched: false),
-    Card(id: 2, value: "🐱", isFlipped: true, isMatched: false),
-    Card(id: 3, value: "🐱", isFlipped: true, isMatched: false),
-    Card(id: 4, value: "🐹", isFlipped: true, isMatched: false),
-    Card(id: 5, value: "🐹", isFlipped: true, isMatched: false),
-  ]
 
   // 게임 시작 시 모든 카드를 뒷면으로 뒤집음
-  private func flipAllCards() {
+  private func handleFlipAllCardsBackSide() {
     for (index, _) in cards.enumerated() {
       cards[index].isFlipped = false
     }
   }
-  
-  // 카드를 뒤집음
-  private func flipOneCard(currentCard: Card) {
+
+  // 선택한 카드를 앞면으로 뒤집음
+  private func handleFlipOneCardFrontSide(currentCard: CardMatch.Card) {
     // 현재 카드가 이미 뒤집어져 있거나 매칭된 경우 무시한다
     if currentCard.isFlipped || currentCard.isMatched {
       return
     }
 
-    // 확인이 필요한 카드 목록 (매칭되지 않았고, 뒤집혀져 있는)
+    // 확인이 필요한 카드 리스트
     let checkableCards = cards.filter { card in
       return !card.isMatched && card.isFlipped
     }
-    
+
     var workItem: DispatchWorkItem?
 
     // 뒤집어진 카드가 0개인 경우
@@ -132,6 +112,8 @@ struct GameView: View {
       return
     }
 
+    workItem?.cancel()
+
     // 뒤집어진 카드가 2개인 경우
     for (index, _) in cards.enumerated() {
       // 매칭되지 않은 모든 카드들은 뒤로 뒤집는다
@@ -172,7 +154,7 @@ struct GameView: View {
         
         ForEach(cards, id: \.id) { card in
           Button(action: {
-            flipOneCard(currentCard: card)
+            handleFlipOneCardFrontSide(currentCard: card)
           }) {
             if card.isFlipped {
               Text("Value: \(card.value)")
