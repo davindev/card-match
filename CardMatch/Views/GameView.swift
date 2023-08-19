@@ -22,22 +22,31 @@ struct GameView: View {
 
   // 게임 시작 카운트다운
   private func handleCountdown() {
-    CardMatch.timer(time: countdown) {
-      countdown -= 1
-      
-      if countdown == 0 {
-        handleFlipAllCardsBackSide()
-        handleProgress()
+    CardMatch.timer(
+      time: countdown,
+      runBlock: {
+        countdown -= 1
+
+        if countdown == 0 {
+          handleFlipAllCardsBackSide()
+          handleProgress()
+        }
       }
-    }
+    )
   }
 
   // 남은 시간을 Progress Bar로 표시
   private func handleProgress() {
-    CardMatch.timer(time: totalTime) {
-      remainingTime -= 1
-      progress = Double(remainingTime) / Double(totalTime)
-    }
+    CardMatch.timer(
+      time: totalTime,
+      runBlock: {
+        remainingTime -= 1
+        progress = Double(remainingTime) / Double(totalTime)
+      },
+      expireBlck: {
+        print("") // 게임 종료 함수 추가
+      }
+    )
   }
 
   // 모든 카드를 뒷면으로 뒤집음
@@ -90,6 +99,8 @@ struct GameView: View {
           }
         }
 
+        // 게임 종료 함수 추가
+
         return
       }
 
@@ -133,9 +144,6 @@ struct GameView: View {
   var body: some View {
     NavigationView {
       VStack {
-        NavigationLink("Go to the ScoreView", destination: ScoreView())
-          .navigationTitle("GameView")
-
         if countdown > 0 {
           Text(String(countdown))
             .padding()
