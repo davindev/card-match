@@ -13,8 +13,12 @@ struct GameView: View {
   private let totalTime = 60 * 2
   @State private var remainingTime = 60 * 2
   @State private var progress = 1.0
+  private let flipDelayTime = 3
+  private let unmatchedDelayTime = 1
 
   @State private var cards = CardMatch.cards
+
+  @State private var workItem: DispatchWorkItem?
 
   // 게임 시작 카운트다운
   private func handleCountdown() {
@@ -36,7 +40,7 @@ struct GameView: View {
     }
   }
 
-  // 게임 시작 시 모든 카드를 뒷면으로 뒤집음
+  // 모든 카드를 뒷면으로 뒤집음
   private func handleFlipAllCardsBackSide() {
     for (index, _) in cards.enumerated() {
       cards[index].isFlipped = false
@@ -45,17 +49,14 @@ struct GameView: View {
 
   // 선택한 카드를 앞면으로 뒤집음
   private func handleFlipOneCardFrontSide(currentCard: CardMatch.Card) {
-    // 현재 카드가 이미 뒤집어져 있거나 매칭된 경우 무시한다
+    // 현재 카드가 이미 뒤집어져 있거나 매칭된 경우
     if currentCard.isFlipped || currentCard.isMatched {
       return
     }
 
-    // 확인이 필요한 카드 리스트
     let checkableCards = cards.filter { card in
-      return !card.isMatched && card.isFlipped
+      return card.isFlipped && !card.isMatched
     }
-
-    var workItem: DispatchWorkItem?
 
     // 뒤집어진 카드가 0개인 경우
     if checkableCards.count == 0 {
@@ -64,17 +65,19 @@ struct GameView: View {
           cards[index].isFlipped = true
 
           workItem = DispatchWorkItem {
-            if !cards[index].isMatched && cards[index].isFlipped {
+            if cards[index].isFlipped && !cards[index].isMatched {
               cards[index].isFlipped = false
             }
           }
 
-          DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: workItem!) // 3초 후 뒤집기
+          DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(flipDelayTime), execute: workItem!)
 
           return
         }
       }
     }
+
+    workItem?.cancel()
 
     // 뒤집어진 카드가 1개인 경우
     if checkableCards.count == 1 {
@@ -86,24 +89,21 @@ struct GameView: View {
             cards[index].isMatched = true
           }
         }
-        
+
         return
       }
-      
-      // 두 카드의 값이 일치하지 않는 경우
-      workItem?.cancel()
 
-      // 현재 선택한 카드를 우선 뒤집고
+      // 두 카드의 값이 일치하지 않는 경우
       for (index, _) in cards.enumerated() {
         if cards[index].id == currentCard.id {
           cards[index].isFlipped = true
+          break
         }
       }
 
-      // 그 다음 다시 뒤로 뒤집는다
       for (index, _) in cards.enumerated() {
         if let checkableCard = checkableCards.first, cards[index].id == checkableCard.id || cards[index].id == currentCard.id {
-          DispatchQueue.main.asyncAfter(deadline: .now() + 1) { // 1초 후 뒤집음
+          DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(unmatchedDelayTime)) {
             cards[index].isFlipped = false
           }
         }
@@ -112,26 +112,18 @@ struct GameView: View {
       return
     }
 
-    workItem?.cancel()
-
     // 뒤집어진 카드가 2개인 경우
     for (index, _) in cards.enumerated() {
-      // 매칭되지 않은 모든 카드들은 뒤로 뒤집는다
       if !cards[index].isMatched {
         cards[index].isFlipped = false
       }
     }
 
-    // 현재 선택된 카드만 뒤집는다
     for (index, _) in cards.enumerated() {
       if cards[index].id == currentCard.id {
         cards[index].isFlipped = true
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { // 3초 후 뒤집음
-          if !cards[index].isMatched && cards[index].isFlipped {
-            cards[index].isFlipped = false
-          }
-        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(flipDelayTime), execute: workItem!)
 
         return
       }
