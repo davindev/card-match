@@ -13,10 +13,20 @@ struct GameView: View {
   private let totalTime = 60 * 2
   @State private var remainingTime = 60 * 2
   @State private var progress = 1.0
+
+  @State private var cards = CardMatch.cards
+  private let allCardsCount = 30
+
   private let flipDelayTime = 3
   private let unmatchedDelayTime = 1
 
-  @State private var cards = CardMatch.cards
+  @State private var currentCombo = 0
+  @State private var accumulatedCombo = 0
+
+  private let cardScore = 100
+  private let timeScore = 50
+  private let comboScore = 30
+  @State private var finalScore = 0
 
   @State private var workItem: DispatchWorkItem?
 
@@ -44,7 +54,7 @@ struct GameView: View {
         progress = Double(remainingTime) / Double(totalTime)
       },
       expireBlck: {
-        print("") // 게임 종료 함수 추가
+        handleQuitGame()
       }
     )
   }
@@ -76,6 +86,8 @@ struct GameView: View {
           workItem = DispatchWorkItem {
             if cards[index].isFlipped && !cards[index].isMatched {
               cards[index].isFlipped = false
+
+              currentCombo = 0
             }
           }
 
@@ -92,6 +104,9 @@ struct GameView: View {
     if checkableCards.count == 1 {
       // 두 카드의 값이 일치하는 경우
       if let checkableCard = checkableCards.first, checkableCard.value == currentCard.value {
+        currentCombo += 1
+        accumulatedCombo += 1
+
         for (index, _) in cards.enumerated() {
           if cards[index].id == checkableCard.id || cards[index].id == currentCard.id {
             cards[index].isFlipped = true
@@ -99,12 +114,20 @@ struct GameView: View {
           }
         }
 
-        // 게임 종료 함수 추가
+        let matchedCards = cards.filter { card in
+          return card.isMatched
+        }
+
+        if matchedCards.count == allCardsCount {
+          handleQuitGame()
+        }
 
         return
       }
 
       // 두 카드의 값이 일치하지 않는 경우
+      currentCombo = 0
+
       for (index, _) in cards.enumerated() {
         if cards[index].id == currentCard.id {
           cards[index].isFlipped = true
@@ -124,6 +147,8 @@ struct GameView: View {
     }
 
     // 뒤집어진 카드가 2개인 경우
+    currentCombo = 0
+
     for (index, _) in cards.enumerated() {
       if !cards[index].isMatched {
         cards[index].isFlipped = false
@@ -141,6 +166,14 @@ struct GameView: View {
     }
   }
 
+  private func handleQuitGame() {
+    let matchedCards = cards.filter { card in
+      return card.isMatched
+    }
+
+    finalScore = (matchedCards.count * cardScore) + (remainingTime * timeScore) + (accumulatedCombo * comboScore)
+  }
+
   var body: some View {
     NavigationView {
       VStack {
@@ -151,6 +184,9 @@ struct GameView: View {
           ProgressView(value: progress)
             .padding(.horizontal)
         }
+
+        Text(String(currentCombo))
+        Text(String(accumulatedCombo))
 
         ForEach(cards, id: \.id) { card in
           Button(action: {
