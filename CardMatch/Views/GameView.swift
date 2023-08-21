@@ -192,8 +192,9 @@ struct GameView: View {
         if currentCombo > 0 {
           Text(String(currentCombo))
         }
-
-        Text(String(isEndedGame))
+        
+        // FIXME: NavigationLink의 isActive를 이용하여 페이지를 이동하는 방식은 deprecated 되었으나 navigationDestination이 정상 동작하지 않아 임시로 사용
+        NavigationLink("", isActive: $isEndedGame) { ScoreView(score: $finalScore) }
 
         ForEach(cards, id: \.id) { card in
           Button(action: { handleFlipOneCardFrontSide(currentCard: card) }) {
@@ -207,7 +208,6 @@ struct GameView: View {
       }
       .onAppear { handleCountdown() }
       .navigationBarBackButtonHidden(true)
-      .navigationDestination(isPresented: $isEndedGame) { ScoreView(score: $finalScore) }
     }
   }
 }
