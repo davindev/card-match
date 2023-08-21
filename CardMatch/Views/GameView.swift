@@ -30,6 +30,9 @@ struct GameView: View {
 
   @State var isEndedGame = false
 
+  @State var timer: Timer?
+  @State var isTimerRunning = false
+
   @State private var workItem: DispatchWorkItem?
 
   // 게임 시작 카운트다운
@@ -41,24 +44,33 @@ struct GameView: View {
 
         if countdown == 0 {
           handleFlipAllCardsBackSide()
-          handleProgress()
+          handleRunTimer()
         }
       }
     )
   }
 
-  // 남은 시간을 Progress Bar로 표시
-  private func handleProgress() {
-    CardMatch.timer(
-      time: totalTime,
+  // 타이머 시작
+  private func handleRunTimer() {
+    isTimerRunning = true
+
+    timer = CardMatch.timer(
+      time: remainingTime,
       runBlock: {
         remainingTime -= 1
         progress = Double(remainingTime) / Double(totalTime)
       },
-      expireBlck: {
+      stopBlck: {
         handleEndGame()
       }
     )
+  }
+
+  // 타이머 멈춤
+  private func handleStopTimer() {
+    timer?.invalidate()
+    timer = nil
+    isTimerRunning = false
   }
 
   // 모든 카드를 뒷면으로 뒤집음
@@ -191,6 +203,16 @@ struct GameView: View {
 
         if currentCombo > 0 {
           Text(String(currentCombo))
+        }
+        
+        if !isTimerRunning {
+          Button("Timer Start") {
+            handleRunTimer()
+          }
+        }
+        
+        Button("Timer Stop") {
+          handleStopTimer()
         }
         
         // FIXME: NavigationLink의 isActive를 이용하여 페이지를 이동하는 방식은 deprecated 되었으나 navigationDestination이 정상 동작하지 않아 임시로 사용

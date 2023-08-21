@@ -7,10 +7,14 @@
 
 import Foundation
 
-public func timer(time: Int, runBlock: (() -> Void)? = nil, expireBlck: (() -> Void)? = nil) {
+public func timer(
+  time: Int,
+  runBlock: (() -> Void)? = nil,
+  stopBlck: (() -> Void)? = nil
+) -> Timer {
   var totalTime = time
 
-  Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+  return Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
     if totalTime > 0 {
       totalTime -= 1
 
@@ -20,8 +24,8 @@ public func timer(time: Int, runBlock: (() -> Void)? = nil, expireBlck: (() -> V
     } else {
       timer.invalidate()
 
-      if let expireBlck = expireBlck {
-        expireBlck()
+      if let stopBlck = stopBlck {
+        stopBlck()
       }
     }
   }
