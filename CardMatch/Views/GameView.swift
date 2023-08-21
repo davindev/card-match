@@ -28,6 +28,8 @@ struct GameView: View {
   private let comboScore = 30
   @State private var finalScore = 0
 
+  @State var isEndedGame = false
+
   @State private var workItem: DispatchWorkItem?
 
   // 게임 시작 카운트다운
@@ -54,7 +56,7 @@ struct GameView: View {
         progress = Double(remainingTime) / Double(totalTime)
       },
       expireBlck: {
-        handleQuitGame()
+        handleEndGame()
       }
     )
   }
@@ -119,7 +121,7 @@ struct GameView: View {
         }
 
         if matchedCards.count == allCardsCount {
-          handleQuitGame()
+          handleEndGame()
         }
 
         return
@@ -142,7 +144,7 @@ struct GameView: View {
           }
         }
       }
-      
+
       return
     }
 
@@ -166,16 +168,18 @@ struct GameView: View {
     }
   }
 
-  private func handleQuitGame() {
+  private func handleEndGame() {
     let matchedCards = cards.filter { card in
       return card.isMatched
     }
 
     finalScore = (matchedCards.count * cardScore) + (remainingTime * timeScore) + (accumulatedCombo * comboScore)
+
+    isEndedGame = true
   }
 
   var body: some View {
-    NavigationView {
+    NavigationStack {
       VStack {
         if countdown > 0 {
           Text(String(countdown))
@@ -185,13 +189,14 @@ struct GameView: View {
             .padding(.horizontal)
         }
 
-        Text(String(currentCombo))
-        Text(String(accumulatedCombo))
+        if currentCombo > 0 {
+          Text(String(currentCombo))
+        }
+
+        Text(String(isEndedGame))
 
         ForEach(cards, id: \.id) { card in
-          Button(action: {
-            handleFlipOneCardFrontSide(currentCard: card)
-          }) {
+          Button(action: { handleFlipOneCardFrontSide(currentCard: card) }) {
             if card.isFlipped {
               Image(card.value)
             } else {
@@ -200,16 +205,15 @@ struct GameView: View {
           }
         }
       }
+      .onAppear { handleCountdown() }
+      .navigationBarBackButtonHidden(true)
+      .navigationDestination(isPresented: $isEndedGame) { ScoreView(score: $finalScore) }
     }
-    .navigationBarBackButtonHidden(true)
-    .onAppear(perform: handleCountdown)
   }
 }
 
 struct GameView_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationView {
-      GameView()
-    }
+    GameView()
   }
 }

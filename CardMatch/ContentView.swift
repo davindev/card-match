@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-  init(){
+  init() {
     UINavigationBar.setAnimationsEnabled(false)
   }
-    
+
   var body: some View {
-    NavigationView{
-      NavigationLink("Go to the GameView", destination: GameView())
-        .navigationTitle("ContentView")
+    NavigationStack {
+      NavigationLink("Go to the GameView") { GameView() }
     }
   }
 }

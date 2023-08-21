@@ -8,16 +8,18 @@
 import SwiftUI
 
 struct ScoreView: View {
+  @Binding var score: Int
+
   var body: some View {
-    Text("ScoreView")
-      .navigationBarBackButtonHidden(true)
+    NavigationStack {
+      Text("ScoreView \(score)")
+        .navigationBarBackButtonHidden(true)
+    }
   }
 }
 
 struct ScoreView_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationView {
-      ScoreView()
-    }
+    ScoreView(score: Binding.constant(0))
   }
 }
