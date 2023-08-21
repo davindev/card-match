@@ -204,17 +204,19 @@ struct GameView: View {
         if currentCombo > 0 {
           Text(String(currentCombo))
         }
-        
-        if !isTimerRunning {
-          Button("Timer Start") {
-            handleRunTimer()
+
+        if countdown == 0 {
+          if isTimerRunning {
+            Button("Timer Stop") {
+              handleStopTimer()
+            }
+          } else {
+            Button("Timer Start") {
+              handleRunTimer()
+            }
           }
         }
-        
-        Button("Timer Stop") {
-          handleStopTimer()
-        }
-        
+
         // FIXME: NavigationLink의 isActive를 이용하여 페이지를 이동하는 방식은 deprecated 되었으나 navigationDestination이 정상 동작하지 않아 임시로 사용
         NavigationLink("", isActive: $isEndedGame) { ScoreView(score: $finalScore) }
 
