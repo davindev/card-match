@@ -203,9 +203,11 @@ struct GameView: View {
           }
         }
 
-//        if currentCombo > 0 {
-          Text(String(currentCombo))
-//        }
+        NavigationLink("메인 페이지로 이동") {
+          ContentView()
+        }
+
+        Text(String(currentCombo))
 
         ForEach(cards, id: \.id) { card in
           Button(action: { handleFlipOneCardFrontSide(currentCard: card) }) {

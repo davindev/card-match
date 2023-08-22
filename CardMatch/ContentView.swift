@@ -15,6 +15,7 @@ struct ContentView: View {
   var body: some View {
     NavigationStack {
       NavigationLink("START GAME") { GameView() }
+        .navigationBarBackButtonHidden(true)
     }
   }
 }
