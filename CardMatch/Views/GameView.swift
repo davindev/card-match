@@ -151,10 +151,12 @@ struct GameView: View {
 
       for index in cards.indices {
         if let checkableCard = checkableCards.first, cards[index].id == checkableCard.id || cards[index].id == currentCard.id {
-          DispatchQueue.main.asyncAfter(
-            deadline: .now() + .seconds(unmatchedDelayTime),
-            execute: workItem!
-          )
+          DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(unmatchedDelayTime)) {
+            if cards[index].isFlipped && !cards[index].isMatched {
+              cards[index].isFlipped = false
+              currentCombo = 0
+            }
+          }
         }
       }
 
