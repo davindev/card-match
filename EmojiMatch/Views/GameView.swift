@@ -88,7 +88,7 @@ struct GameView: View {
     }
 
     let checkableCards = cards.filter { card in
-      return card.isFlipped && !card.isMatched
+      card.isFlipped && !card.isMatched
     }
 
     // 뒤집어진 카드가 0개인 경우
@@ -131,7 +131,7 @@ struct GameView: View {
         accumulatedCombo += 1
 
         let matchedCards = cards.filter { card in
-          return card.isMatched
+          card.isMatched
         }
 
         if matchedCards.count == allCardsCount {
@@ -175,7 +175,7 @@ struct GameView: View {
 
   private func handleEndGame() {
     let matchedCards = cards.filter { card in
-      return card.isMatched
+      card.isMatched
     }
 
     finalScore = (matchedCards.count * cardScore) + (remainingTime * timeScore) + (accumulatedCombo * comboScore)
@@ -223,7 +223,7 @@ struct GameView: View {
 
         // FIXME: NavigationLink의 isActive를 이용하여 페이지를 이동하는 방식은 deprecated 되었으나 navigationDestination이 정상 동작하지 않아 임시로 사용
         NavigationLink("", isActive: $isEndedGame) {
-          ScoreView(score: $finalScore)
+          ScoreView(finalScore: $finalScore)
         }
       }
       .onAppear { handleCountdown() }

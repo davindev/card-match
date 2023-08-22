@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/vinnie/Desktop/emoji-match/EmojiMatch.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>
