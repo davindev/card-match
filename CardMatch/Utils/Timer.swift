@@ -10,7 +10,7 @@ import Foundation
 public func timer(
   time: Int,
   runBlock: (() -> Void)? = nil,
-  stopBlck: (() -> Void)? = nil
+  stopBlock: (() -> Void)? = nil
 ) -> Timer {
   var totalTime = time
 
@@ -24,8 +24,8 @@ public func timer(
     } else {
       timer.invalidate()
 
-      if let stopBlck = stopBlck {
-        stopBlck()
+      if let stopBlock = stopBlock {
+        stopBlock()
       }
     }
   }

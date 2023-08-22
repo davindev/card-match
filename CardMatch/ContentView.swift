@@ -14,7 +14,7 @@ struct ContentView: View {
 
   var body: some View {
     NavigationStack {
-      NavigationLink("Go to the GameView") { GameView() }
+      NavigationLink("START GAME") { GameView() }
     }
   }
 }

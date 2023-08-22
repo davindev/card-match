@@ -10,8 +10,10 @@ import SwiftUI
 struct GameView: View {
   @State private var countdown = 3
 
+  @State var timer: Timer?
   private let totalTime = 60 * 2
   @State private var remainingTime = 60 * 2
+  @State var isTimerRunning = false
   @State private var progress = 1.0
 
   @State private var cards = CardMatch.cards
@@ -23,15 +25,12 @@ struct GameView: View {
   @State private var currentCombo = 0
   @State private var accumulatedCombo = 0
 
-  private let cardScore = 100
-  private let timeScore = 50
-  private let comboScore = 30
+  private let cardScore = 1000
+  private let timeScore = 500
+  private let comboScore = 300
   @State private var finalScore = 0
 
   @State var isEndedGame = false
-
-  @State var timer: Timer?
-  @State var isTimerRunning = false
 
   @State private var workItem: DispatchWorkItem?
 
@@ -52,21 +51,22 @@ struct GameView: View {
 
   // 타이머 시작
   private func handleRunTimer() {
-    isTimerRunning = true
-
     timer = CardMatch.timer(
       time: remainingTime,
       runBlock: {
         remainingTime -= 1
         progress = Double(remainingTime) / Double(totalTime)
       },
-      stopBlck: {
+      stopBlock: {
+        handleStopTimer()
         handleEndGame()
       }
     )
+
+    isTimerRunning = true
   }
 
-  // 타이머 멈춤
+  // 타이머 중지
   private func handleStopTimer() {
     timer?.invalidate()
     timer = nil
@@ -93,19 +93,21 @@ struct GameView: View {
 
     // 뒤집어진 카드가 0개인 경우
     if checkableCards.count == 0 {
-      for (index, _) in cards.enumerated() {
+      for index in cards.indices {
         if cards[index].id == currentCard.id {
           cards[index].isFlipped = true
 
           workItem = DispatchWorkItem {
             if cards[index].isFlipped && !cards[index].isMatched {
               cards[index].isFlipped = false
-
               currentCombo = 0
             }
           }
 
-          DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(flipDelayTime), execute: workItem!)
+          DispatchQueue.main.asyncAfter(
+            deadline: .now() + .seconds(flipDelayTime),
+            execute: workItem!
+          )
 
           return
         }
@@ -118,15 +120,15 @@ struct GameView: View {
     if checkableCards.count == 1 {
       // 두 카드의 값이 일치하는 경우
       if let checkableCard = checkableCards.first, checkableCard.value == currentCard.value {
-        currentCombo += 1
-        accumulatedCombo += 1
-
-        for (index, _) in cards.enumerated() {
+        for index in cards.indices {
           if cards[index].id == checkableCard.id || cards[index].id == currentCard.id {
             cards[index].isFlipped = true
             cards[index].isMatched = true
           }
         }
+
+        currentCombo += 1
+        accumulatedCombo += 1
 
         let matchedCards = cards.filter { card in
           return card.isMatched
@@ -140,20 +142,19 @@ struct GameView: View {
       }
 
       // 두 카드의 값이 일치하지 않는 경우
-      currentCombo = 0
-
-      for (index, _) in cards.enumerated() {
+      for index in cards.indices {
         if cards[index].id == currentCard.id {
           cards[index].isFlipped = true
           break
         }
       }
 
-      for (index, _) in cards.enumerated() {
+      for index in cards.indices {
         if let checkableCard = checkableCards.first, cards[index].id == checkableCard.id || cards[index].id == currentCard.id {
-          DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(unmatchedDelayTime)) {
-            cards[index].isFlipped = false
-          }
+          DispatchQueue.main.asyncAfter(
+            deadline: .now() + .seconds(unmatchedDelayTime),
+            execute: workItem!
+          )
         }
       }
 
@@ -161,23 +162,13 @@ struct GameView: View {
     }
 
     // 뒤집어진 카드가 2개인 경우
-    currentCombo = 0
-
-    for (index, _) in cards.enumerated() {
+    for index in cards.indices {
       if !cards[index].isMatched {
         cards[index].isFlipped = false
       }
     }
-
-    for (index, _) in cards.enumerated() {
-      if cards[index].id == currentCard.id {
-        cards[index].isFlipped = true
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(flipDelayTime), execute: workItem!)
-
-        return
-      }
-    }
+    
+    handleFlipOneCardFrontSide(currentCard: currentCard)
   }
 
   private func handleEndGame() {
@@ -195,14 +186,9 @@ struct GameView: View {
       VStack {
         if countdown > 0 {
           Text(String(countdown))
-            .padding()
         } else {
           ProgressView(value: progress)
             .padding(.horizontal)
-        }
-
-        if currentCombo > 0 {
-          Text(String(currentCombo))
         }
 
         if countdown == 0 {
@@ -217,8 +203,9 @@ struct GameView: View {
           }
         }
 
-        // FIXME: NavigationLink의 isActive를 이용하여 페이지를 이동하는 방식은 deprecated 되었으나 navigationDestination이 정상 동작하지 않아 임시로 사용
-        NavigationLink("", isActive: $isEndedGame) { ScoreView(score: $finalScore) }
+//        if currentCombo > 0 {
+          Text(String(currentCombo))
+//        }
 
         ForEach(cards, id: \.id) { card in
           Button(action: { handleFlipOneCardFrontSide(currentCard: card) }) {
@@ -228,6 +215,11 @@ struct GameView: View {
               Text("뒷면")
             }
           }
+        }
+
+        // FIXME: NavigationLink의 isActive를 이용하여 페이지를 이동하는 방식은 deprecated 되었으나 navigationDestination이 정상 동작하지 않아 임시로 사용
+        NavigationLink("", isActive: $isEndedGame) {
+          ScoreView(score: $finalScore)
         }
       }
       .onAppear { handleCountdown() }
