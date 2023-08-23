@@ -19,7 +19,12 @@ struct ScoreView: View {
 
   private func handleFetchScores() async {
     do {
-      let db = try await Firestore.firestore().collection("score").getDocuments()
+      let db = try await Firestore
+        .firestore()
+        .collection("score")
+        .order(by: "score", descending: true)
+        .limit(to: 10)
+        .getDocuments()
 
       scores = db.documents.compactMap { document in
         let data = document.data()

@@ -15,6 +15,7 @@
 		2E7D583A2A90D6C100CD2D98 /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E7D58392A90D6C100CD2D98 /* Timer.swift */; };
 		2E7D583D2A90D83100CD2D98 /* Cards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E7D583C2A90D83100CD2D98 /* Cards.swift */; };
 		2EC37AE92A8CB52600727AA0 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC37AE82A8CB52600727AA0 /* GameView.swift */; };
+		2EC959502A9587FD00185474 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2EC9594F2A9587FD00185474 /* GoogleService-Info.plist */; };
 		2ED908E92A8C9F700080062A /* EmojiMatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ED908E82A8C9F700080062A /* EmojiMatchApp.swift */; };
 		2ED908EB2A8C9F700080062A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ED908EA2A8C9F700080062A /* ContentView.swift */; };
 		2ED908ED2A8C9F710080062A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2ED908EC2A8C9F710080062A /* Assets.xcassets */; };
@@ -28,6 +29,7 @@
 		2E7D58392A90D6C100CD2D98 /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 		2E7D583C2A90D83100CD2D98 /* Cards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cards.swift; sourceTree = "<group>"; };
 		2EC37AE82A8CB52600727AA0 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		2EC9594F2A9587FD00185474 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2ED908E52A8C9F700080062A /* EmojiMatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmojiMatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2ED908E82A8C9F700080062A /* EmojiMatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMatchApp.swift; sourceTree = "<group>"; };
 		2ED908EA2A8C9F700080062A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -48,13 +50,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2E35ADAE2A947F9500322AB3 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		2E7D58362A90CB4100CD2D98 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -85,7 +80,6 @@
 			children = (
 				2ED908E72A8C9F700080062A /* EmojiMatch */,
 				2ED908E62A8C9F700080062A /* Products */,
-				2E35ADAE2A947F9500322AB3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -100,6 +94,7 @@
 		2ED908E72A8C9F700080062A /* EmojiMatch */ = {
 			isa = PBXGroup;
 			children = (
+				2EC9594F2A9587FD00185474 /* GoogleService-Info.plist */,
 				2E7D583B2A90D81E00CD2D98 /* Constants */,
 				2E7D58362A90CB4100CD2D98 /* Utils */,
 				2EC37AE52A8CB1E700727AA0 /* Views */,
@@ -188,6 +183,7 @@
 			files = (
 				2ED908F02A8C9F710080062A /* Preview Assets.xcassets in Resources */,
 				2E35ADAA2A9479A500322AB3 /* GoogleService-Info.plist in Resources */,
+				2EC959502A9587FD00185474 /* GoogleService-Info.plist in Resources */,
 				2ED908ED2A8C9F710080062A /* Assets.xcassets in Resources */,
 				2E35ADA82A94799500322AB3 /* GoogleService-Info.plist in Resources */,
 			);
