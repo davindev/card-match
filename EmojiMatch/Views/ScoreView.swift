@@ -16,17 +16,18 @@ struct Score: Hashable {
 struct ScoreView: View {
   @Binding var finalScore: Int
   @State private var scores: [Score] = []
+  private let scoresMaxCount = 20
 
   private func handleFetchScores() async {
     do {
       let db = try await Firestore
         .firestore()
-        .collection("score")
-        .order(by: "score", descending: true)
-        .limit(to: 10)
+        .collection("scores")
+        .order(by: "score")
+        .limit(to: scoresMaxCount)
         .getDocuments()
 
-      scores = db.documents.compactMap { document in
+      var newScores = db.documents.compactMap { document in
         let data = document.data()
 
         if let name = data["name"] as? String,
@@ -37,6 +38,26 @@ struct ScoreView: View {
 
         return nil
       }
+
+      for (index, newScore) in newScores.enumerated() {
+        if newScore.score >= finalScore {
+          newScores.insert(
+            Score(name: "", score: finalScore),
+            at: index
+          )
+          break
+        }
+      }
+
+      let isInsertedFinalScore = newScores.contains { newScore in
+        newScore.name == ""
+      }
+
+      if !isInsertedFinalScore {
+        newScores.append(Score(name: "", score: finalScore))
+      }
+
+      scores = Array(newScores.reversed().prefix(scoresMaxCount))
     } catch {
       print("Error fetching scores: \(error)")
     }
@@ -48,7 +69,7 @@ struct ScoreView: View {
         Text("ScoreView \(finalScore)")
 
         ForEach(scores, id: \.self) { score in
-          Text(score.name)
+          Text(score.name == "" ? "인풋자리" : score.name)
           Text(String(score.score))
         }
       }
