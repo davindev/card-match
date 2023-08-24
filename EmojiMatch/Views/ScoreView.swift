@@ -68,6 +68,9 @@ struct ScoreView: View {
       VStack {
         Text("ScoreView \(finalScore)")
 
+        NavigationLink("메인으로 이동") { ContentView() }
+        NavigationLink("재시작") { GameView() }
+
         ForEach(scores, id: \.self) { score in
           Text(score.name == "" ? "인풋자리" : score.name)
           Text(String(score.score))
