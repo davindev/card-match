@@ -18,6 +18,8 @@ struct ScoreView: View {
   @State private var scores: [Score] = []
   private let scoresMaxCount = 20
 
+  @State private var name = ""
+
   private func handleFetchScores() async {
     do {
       let db = try await Firestore
@@ -66,14 +68,21 @@ struct ScoreView: View {
   var body: some View {
     NavigationStack {
       VStack {
-        Text("ScoreView \(finalScore)")
-
         NavigationLink("메인으로 이동") { ContentView() }
         NavigationLink("재시작") { GameView() }
 
         ForEach(scores, id: \.self) { score in
-          Text(score.name == "" ? "인풋자리" : score.name)
-          Text(String(score.score))
+          HStack {
+            if score.name == "" {
+              TextField("닉네임을 입력하세요", text: $name)
+              Button("저장") {
+                print("firebase post \(name)")
+              }
+            } else {
+              Text(score.name)
+            }
+            Text(String(score.score))
+          }
         }
       }
       .onAppear() {
