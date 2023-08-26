@@ -118,8 +118,9 @@ struct ScoreView: View {
         NavigationLink("메인으로 이동") { ContentView() }
         NavigationLink("재시작") { GameView() }
 
-        ForEach(scores, id: \.self) { score in
+        ForEach(Array(scores.enumerated()), id: \.offset) { index, score in
           HStack {
+            Text(String(index + 1))
             if score.name == "" {
               VStack {
                 TextField("닉네임을 입력하세요", text: $name)
