@@ -22,48 +22,52 @@ struct ScoreView: View {
   @State private var isPassedNameValidation: Bool?
   @State private var isShakedValidationMessage = false
 
-  private func handleFetchScores() async {
-    do {
-      let db = try await Firestore
-        .firestore()
-        .collection("scores")
-        .order(by: "score")
-        .limit(to: scoresMaxCount)
-        .getDocuments()
+  private func handleFetchScores() {
+    Task {
+      do {
+        let db = try await Firestore
+          .firestore()
+          .collection("scores")
+          .order(by: "score")
+          .limit(to: scoresMaxCount)
+          .getDocuments()
 
-      var newScores = db.documents.compactMap { document in
-        let data = document.data()
+        var newScores = db.documents.compactMap { document in
+          let data = document.data()
 
-        if let name = data["name"] as? String,
-           let score = data["score"] as? Int
-        {
-          return Score(name: name, score: score)
+          if let name = data["name"] as? String,
+             let score = data["score"] as? Int
+          {
+            return Score(name: name, score: score)
+          }
+
+          return nil
         }
 
-        return nil
-      }
-
-      for (index, newScore) in newScores.enumerated() {
-        if newScore.score >= finalScore {
-          newScores.insert(
-            Score(name: "", score: finalScore),
-            at: index
-          )
-          break
+        for (index, newScore) in newScores.enumerated() {
+          if newScore.score >= finalScore {
+            newScores.insert(
+              Score(name: "", score: finalScore),
+              at: index
+            )
+            break
+          }
         }
-      }
 
-      let isInsertedFinalScore = newScores.contains { newScore in
-        newScore.name == ""
-      }
+        let isInsertedFinalScore = newScores.contains { newScore in
+          newScore.name == ""
+        }
 
-      if !isInsertedFinalScore {
-        newScores.append(Score(name: "", score: finalScore))
-      }
+        if !isInsertedFinalScore {
+          newScores.append(Score(name: "", score: finalScore))
+        }
 
-      scores = Array(newScores.reversed().prefix(scoresMaxCount))
-    } catch {
-      print("Error fetching scores: \(error)")
+        scores = Array(newScores.reversed().prefix(scoresMaxCount))
+        
+        print(scores)
+      } catch {
+        print("Error fetching scores: \(error)")
+      }
     }
   }
 
@@ -83,11 +87,22 @@ struct ScoreView: View {
     isPassedNameValidation = name.count >= 2
 
     if isPassedNameValidation == true {
-      print("validate 성공")
+      let db = Firestore.firestore()
+      
+      db.collection("scores").addDocument(data: [
+        "name": name,
+        "score": score
+      ]) { error in
+        if let error = error {
+          print("Error adding document: \(error)")
+        } else {
+          handleFetchScores()
+        }
+      }
+
       return
     }
 
-    print("validate 실패")
     isShakedValidationMessage = true
     withAnimation(Animation.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
       isShakedValidationMessage = false
@@ -126,11 +141,7 @@ struct ScoreView: View {
           }
         }
       }
-      .onAppear() {
-        Task {
-          await handleFetchScores()
-        }
-      }
+      .onAppear() { handleFetchScores() }
       .navigationBarBackButtonHidden(true)
     }
   }
