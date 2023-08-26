@@ -19,6 +19,8 @@ struct ScoreView: View {
   private let scoresMaxCount = 20
 
   @State private var name = ""
+  @State private var isPassedNameValidation: Bool?
+  @State private var isShakedValidationMessage = false
 
   private func handleFetchScores() async {
     do {
@@ -65,6 +67,33 @@ struct ScoreView: View {
     }
   }
 
+  private func handleChangeName(value: String) {
+    let newName = value
+        .filter { !$0.isWhitespace }
+        .replacingOccurrences(
+          of: EmojiMatch.nameRegex,
+          with: "",
+          options: .regularExpression
+        )
+        .prefix(8)
+    name = String(newName)
+  }
+
+  private func handleSubmitScore(name: String, score: Int) {
+    isPassedNameValidation = name.count >= 2
+
+    if isPassedNameValidation == true {
+      print("validate 성공")
+      return
+    }
+
+    print("validate 실패")
+    isShakedValidationMessage = true
+    withAnimation(Animation.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
+      isShakedValidationMessage = false
+    }
+  }
+
   var body: some View {
     NavigationStack {
       VStack {
@@ -74,10 +103,22 @@ struct ScoreView: View {
         ForEach(scores, id: \.self) { score in
           HStack {
             if score.name == "" {
-              TextField("닉네임을 입력하세요", text: $name)
-              Button("저장") {
-                print("firebase post \(name)")
+              VStack {
+                TextField("닉네임을 입력하세요", text: $name)
+                  .onChange(
+                    of: name,
+                    perform: { handleChangeName(value: $0) }
+                  )
+                  .onSubmit { handleSubmitScore(name: name, score: finalScore) }
+                VStack {
+                  Text("한글, 영어, 숫자만 입력이 가능합니다")
+                    .foregroundColor(isPassedNameValidation == false ? Color.red : Color.black)
+                  Text("최소 2글자, 최대 8글자 입력이 가능합니다")
+                    .foregroundColor(isPassedNameValidation == false ? Color.red : Color.black)
+                }
+                .offset(x: isShakedValidationMessage ? 10 : 0)
               }
+              Button("저장") { handleSubmitScore(name: name, score: finalScore) }
             } else {
               Text(score.name)
             }
