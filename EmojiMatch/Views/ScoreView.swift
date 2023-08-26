@@ -21,6 +21,7 @@ struct ScoreView: View {
   @State private var name = ""
   @State private var isPassedNameValidation: Bool?
   @State private var isShakedValidationMessage = false
+  @State private var shouldInsertFinalScore = true
 
   private func handleFetchScores() {
     Task {
@@ -44,27 +45,29 @@ struct ScoreView: View {
           return nil
         }
 
-        for (index, newScore) in newScores.enumerated() {
-          if newScore.score >= finalScore {
-            newScores.insert(
-              Score(name: "", score: finalScore),
-              at: index
-            )
-            break
+        if shouldInsertFinalScore {
+          for (index, newScore) in newScores.enumerated() {
+            if newScore.score >= finalScore {
+              newScores.insert(
+                Score(name: "", score: finalScore),
+                at: index
+              )
+              break
+            }
           }
-        }
 
-        let isInsertedFinalScore = newScores.contains { newScore in
-          newScore.name == ""
-        }
+          let isInsertedFinalScore = newScores.contains { newScore in
+            newScore.name == ""
+          }
 
-        if !isInsertedFinalScore {
-          newScores.append(Score(name: "", score: finalScore))
+          if !isInsertedFinalScore {
+            newScores.append(Score(name: "", score: finalScore))
+          }
+          
+          shouldInsertFinalScore = false
         }
-
-        scores = Array(newScores.reversed().prefix(scoresMaxCount))
         
-        print(scores)
+        scores = Array(newScores.reversed().prefix(scoresMaxCount))
       } catch {
         print("Error fetching scores: \(error)")
       }
