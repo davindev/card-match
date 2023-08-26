@@ -75,7 +75,7 @@ struct GameView: View {
 
   // 모든 카드를 뒷면으로 뒤집음
   private func handleFlipAllCardsBackSide() {
-    for (index, _) in cards.enumerated() {
+    for index in cards.indices {
       cards[index].isFlipped = false
     }
   }

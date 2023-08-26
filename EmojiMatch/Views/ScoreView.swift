@@ -63,10 +63,10 @@ struct ScoreView: View {
           if !isInsertedFinalScore {
             newScores.append(Score(name: "", score: finalScore))
           }
-          
+
           shouldInsertFinalScore = false
         }
-        
+
         scores = Array(newScores.reversed().prefix(scoresMaxCount))
       } catch {
         print("Error fetching scores: \(error)")
@@ -91,11 +91,8 @@ struct ScoreView: View {
 
     if isPassedNameValidation == true {
       let db = Firestore.firestore()
-      
-      db.collection("scores").addDocument(data: [
-        "name": name,
-        "score": score
-      ]) { error in
+
+      db.collection("scores").addDocument(data: ["name": name, "score": score]) { error in
         if let error = error {
           print("Error adding document: \(error)")
         } else {
@@ -107,6 +104,7 @@ struct ScoreView: View {
     }
 
     isShakedValidationMessage = true
+
     withAnimation(Animation.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
       isShakedValidationMessage = false
     }
