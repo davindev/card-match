@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GameView: View {
   @State private var countdown = 3
+  private let countdownColors = [EmojiMatch.yellow03, EmojiMatch.yellow02, EmojiMatch.yellow01]
 
   @State var timer: Timer?
   private let totalTime = 60 * 2
@@ -18,6 +19,7 @@ struct GameView: View {
 
   @State private var cards = EmojiMatch.cards
   private let allCardsCount = 30
+  private let cardRows = Array(repeating: GridItem(.flexible(), spacing: 83), count: 6)
 
   private let flipDelayTime = 3
   private let unmatchedDelayTime = 1
@@ -185,40 +187,90 @@ struct GameView: View {
 
   var body: some View {
     NavigationStack {
-      VStack {
+      ZStack {
+        VStack {
+          HStack {
+            Text("Combo  \(currentCombo)")
+              .font(.custom("LOTTERIACHAB", size: 20))
+              .foregroundColor(EmojiMatch.yellow03)
+
+            Spacer()
+
+            HStack {
+              NavigationLink(destination: ContentView()) {
+                Image(systemName: "house.circle.fill")
+                  .font(.system(size: 40))
+                  .foregroundColor(EmojiMatch.yellow04)
+              }
+
+              if isTimerRunning {
+                Button(action: handleStopTimer ) {
+                  Image(systemName: "stop.circle.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(EmojiMatch.red)
+                }
+              } else {
+                Button(action: handleRunTimer ) {
+                  Image(systemName: "play.circle.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(EmojiMatch.green)
+                }
+              }
+            }
+          }
+          .padding(.leading, 30)
+          .padding(.trailing, 30)
+          .padding(.bottom, 60)
+
+          LazyHGrid(rows: cardRows) {
+            ForEach(cards, id: \.id) { card in
+              if card.isFlipped {
+                ZStack {
+                  Image("card_front")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 60)
+                  Text(card.value)
+                    .font(.system(size: 30))
+                }
+              } else {
+                Image("card_back")
+                  .resizable()
+                  .aspectRatio(contentMode: .fill)
+                  .frame(width: 60)
+                  .onTapGesture { handleFlipOneCardFrontSide(currentCard: card) }
+              }
+            }
+          }
+
+          VStack {
+            ProgressView(value: progress)
+              .scaleEffect(x: 1, y: 3, anchor: .center)
+              .accentColor(EmojiMatch.yellow03)
+          }
+          .padding(.top, 60)
+          .padding(.leading, 30)
+          .padding(.trailing, 30)
+        }
+
         if countdown > 0 {
-          Text(String(countdown))
-        } else {
-          ProgressView(value: progress)
-            .padding(.horizontal)
-        }
-
-        if countdown == 0 {
-          if isTimerRunning {
-            Button("Timer Stop") {
-              handleStopTimer()
-            }
-          } else {
-            Button("Timer Start") {
-              handleRunTimer()
-            }
+          VStack {
+            Text(String(countdown))
+              .font(.custom("LOTTERIACHAB", size: 180))
+              .foregroundColor(countdownColors[countdown - 1])
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
+              .shadow(color: EmojiMatch.yellow05, radius: 1)
           }
-        }
-
-        NavigationLink("메인 페이지로 이동") {
-          ContentView()
-        }
-
-        Text(String(currentCombo))
-
-        ForEach(cards, id: \.id) { card in
-          Button(action: { handleFlipOneCardFrontSide(currentCard: card) }) {
-            if card.isFlipped {
-              Text(card.value)
-            } else {
-              Text("뒷면")
-            }
-          }
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+          .background(.black.opacity(0.4))
         }
 
         // FIXME: NavigationLink의 isActive를 이용하여 페이지를 이동하는 방식은 deprecated 되었으나 navigationDestination이 정상 동작하지 않아 임시로 사용
@@ -227,6 +279,7 @@ struct GameView: View {
         }
       }
       .onAppear { handleCountdown() }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
       .navigationBarBackButtonHidden(true)
     }
   }

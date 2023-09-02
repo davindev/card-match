@@ -12,7 +12,7 @@ struct ContentView: View {
     UINavigationBar.setAnimationsEnabled(false)
   }
 
-  private let emojis = ["☁️", "🍋", "🎾", "🩷"]
+  private let emojis = ["☁️", "🍋", "🎾", "💗"]
   @State private var backgroundEmoji = ""
 
   var body: some View {
@@ -26,7 +26,7 @@ struct ContentView: View {
               y: .random(in: 0...UIScreen.main.bounds.height)
             )
         }
-        .onAppear() {
+        .onAppear {
           backgroundEmoji = emojis.randomElement() ?? ""
         }
 
@@ -39,16 +39,16 @@ struct ContentView: View {
           NavigationLink(destination: GameView()) {
             Text("시작하기")
               .frame(width: 130, height: 46)
-              .background(Color(red: 252/255.0, green: 178/255.0, blue: 26/255.0))
+              .background(EmojiMatch.yellow03)
               .cornerRadius(8)
               .font(.custom("LOTTERIACHAB", size: 24))
-              .foregroundColor(Color(red: 255/255.0, green: 252/255.0, blue: 222/255.0))
+              .foregroundColor(EmojiMatch.yellow01)
           }
           .padding(.top, 14)
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .background(Color(red: 255/255.0, green: 252/255.0, blue: 222/255.0))
+      .background(EmojiMatch.yellow01)
       .navigationBarBackButtonHidden(true)
     }
   }

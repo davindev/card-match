@@ -16,6 +16,7 @@
 		2EC37AE92A8CB52600727AA0 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC37AE82A8CB52600727AA0 /* GameView.swift */; };
 		2EC454892A96F2C2007695AE /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC454882A96F2C2007695AE /* Regex.swift */; };
 		2ED902702AA3238400E07543 /* chab.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2ED9026F2AA3238400E07543 /* chab.otf */; };
+		2ED902722AA33DAB00E07543 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ED902712AA33DAB00E07543 /* Colors.swift */; };
 		2ED908E92A8C9F700080062A /* EmojiMatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ED908E82A8C9F700080062A /* EmojiMatchApp.swift */; };
 		2ED908EB2A8C9F700080062A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ED908EA2A8C9F700080062A /* ContentView.swift */; };
 		2ED908ED2A8C9F710080062A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2ED908EC2A8C9F710080062A /* Assets.xcassets */; };
@@ -32,6 +33,7 @@
 		2EC37AE82A8CB52600727AA0 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		2EC454882A96F2C2007695AE /* Regex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		2ED9026F2AA3238400E07543 /* chab.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = chab.otf; sourceTree = "<group>"; };
+		2ED902712AA33DAB00E07543 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		2ED908E52A8C9F700080062A /* EmojiMatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmojiMatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2ED908E82A8C9F700080062A /* EmojiMatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMatchApp.swift; sourceTree = "<group>"; };
 		2ED908EA2A8C9F700080062A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -65,6 +67,7 @@
 			children = (
 				2E7D583C2A90D83100CD2D98 /* Cards.swift */,
 				2EC454882A96F2C2007695AE /* Regex.swift */,
+				2ED902712AA33DAB00E07543 /* Colors.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -208,6 +211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EC37AE92A8CB52600727AA0 /* GameView.swift in Sources */,
+				2ED902722AA33DAB00E07543 /* Colors.swift in Sources */,
 				2E3914412A8DA1EE00EF79F5 /* ScoreView.swift in Sources */,
 				2ED908EB2A8C9F700080062A /* ContentView.swift in Sources */,
 				2EC454892A96F2C2007695AE /* Regex.swift in Sources */,
