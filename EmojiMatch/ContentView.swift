@@ -12,23 +12,10 @@ struct ContentView: View {
     UINavigationBar.setAnimationsEnabled(false)
   }
 
-  private let emojis = ["☁️", "🍋", "🎾", "💗"]
-  @State private var backgroundEmoji = ""
-
   var body: some View {
     NavigationStack {
       ZStack {
-        ForEach(0..<20, id: \.self) { emoji in
-          Text(backgroundEmoji)
-            .font(.system(size: .random(in: 140...200)))
-            .position(
-              x: .random(in: 0...UIScreen.main.bounds.width),
-              y: .random(in: 0...UIScreen.main.bounds.height)
-            )
-        }
-        .onAppear {
-          backgroundEmoji = emojis.randomElement() ?? ""
-        }
+        RandomEmojiView()
 
         VStack {
           Image("logo")
