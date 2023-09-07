@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RandomEmojiView: View {
-  private let emojis = ["☁️", "🍋", "🎾", "💗"]
+  @Binding var emojis: [String]
   @State private var randomEmoji = ""
 
   var body: some View {
@@ -28,7 +28,6 @@ struct RandomEmojiView: View {
 
 struct RandomEmojiView_Previews: PreviewProvider {
   static var previews: some View {
-    RandomEmojiView()
+    RandomEmojiView(emojis: Binding.constant(["☁️", "🍋", "🎾", "💗"]))
   }
 }
-

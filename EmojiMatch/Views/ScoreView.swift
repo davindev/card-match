@@ -14,14 +14,17 @@ struct Score: Hashable {
 }
 
 struct ScoreView: View {
+  @State private var emojis = ["🏆"]
+
   @Binding var finalScore: Int
   @State private var scores: [Score] = []
   private let scoresMaxCount = 20
+  @State private var shouldInsertFinalScore = true
+
+  private let rankingColor = [EmojiMatch.yellow03, EmojiMatch.yellow02, EmojiMatch.yellow01]
 
   @State private var name = ""
-  @State private var isPassedNameValidation: Bool?
-  @State private var isShakedValidationMessage = false
-  @State private var shouldInsertFinalScore = true
+  @State private var isShownAlert = false
 
   private func handleFetchScores() {
     Task {
@@ -29,7 +32,6 @@ struct ScoreView: View {
         let db = try await Firestore
           .firestore()
           .collection("scores")
-          .order(by: "score")
           .limit(to: scoresMaxCount)
           .getDocuments()
 
@@ -87,9 +89,9 @@ struct ScoreView: View {
   }
 
   private func handleSubmitScore(name: String, score: Int) {
-    isPassedNameValidation = name.count >= 2
+    isShownAlert = name.count < 2
 
-    if isPassedNameValidation == true {
+    if !isShownAlert {
       let db = Firestore.firestore()
 
       db.collection("scores").addDocument(data: ["name": name, "score": score]) { error in
@@ -99,51 +101,107 @@ struct ScoreView: View {
           handleFetchScores()
         }
       }
-
-      return
-    }
-
-    isShakedValidationMessage = true
-
-    withAnimation(Animation.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
-      isShakedValidationMessage = false
     }
   }
 
   var body: some View {
     NavigationStack {
-      VStack {
-        NavigationLink("메인으로 이동") { ContentView() }
-        NavigationLink("재시작") { GameView() }
+      ZStack {
+        RandomEmojiView(emojis: $emojis)
 
-        ForEach(Array(scores.enumerated()), id: \.offset) { index, score in
-          HStack {
-            Text(String(index + 1))
-            if score.name == "" {
-              VStack {
-                TextField("닉네임을 입력하세요", text: $name)
-                  .onChange(
-                    of: name,
-                    perform: { handleChangeName(value: $0) }
-                  )
-                  .onSubmit { handleSubmitScore(name: name, score: finalScore) }
-                VStack {
-                  Text("한글, 영어, 숫자만 입력이 가능합니다")
-                    .foregroundColor(isPassedNameValidation == false ? Color.red : Color.black)
-                  Text("최소 2글자, 최대 8글자 입력이 가능합니다")
-                    .foregroundColor(isPassedNameValidation == false ? Color.red : Color.black)
+        VStack {
+          Text("Ranking")
+            .padding(.bottom, 10)
+            .font(.custom("LOTTERIACHAB", size: 60))
+            .foregroundColor(EmojiMatch.yellow03)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+
+          VStack {
+            ForEach(Array(scores.enumerated()), id: \.offset) { index, score in
+              HStack {
+                if index <= 2 {
+                  Text("\(index + 1)등")
+                    .frame(width: 40)
+                    .font(.custom("LOTTERIACHAB", size: 20))
+                    .foregroundColor(rankingColor[index])
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                } else {
+                  Text("\(index + 1)등")
+                    .frame(width: 40)
                 }
-                .offset(x: isShakedValidationMessage ? 10 : 0)
+
+                if score.name == "" {
+                  HStack {
+                    VStack {
+                      TextField("닉네임", text: $name)
+                        .onChange(
+                          of: name,
+                          perform: { handleChangeName(value: $0) }
+                        )
+                      Divider()
+                        .frame(height: 2)
+                        .padding(-3)
+                        .background(EmojiMatch.gray)
+                    }
+                    Button("저장") { handleSubmitScore(name: name, score: finalScore) }
+                      .alert("닉네임을 확인해주세요.", isPresented: $isShownAlert) {}
+                      .frame(width: 40, height: 26)
+                      .background(EmojiMatch.yellow04)
+                      .cornerRadius(8)
+                      .foregroundColor(EmojiMatch.yellow01)
+                  }
+                  .frame(width: 150)
+                } else {
+                  Text(score.name)
+                    .frame(width: 150)
+                }
+
+                Text(String(score.score))
+                  .frame(width: 60)
               }
-              Button("저장") { handleSubmitScore(name: name, score: finalScore) }
-            } else {
-              Text(score.name)
             }
-            Text(String(score.score))
+            .padding(1)
           }
+
+          HStack {
+            NavigationLink(destination: ContentView()) {
+              Image(systemName: "house.circle.fill")
+                .font(.system(size: 40))
+                .foregroundColor(EmojiMatch.yellow03)
+            }
+            NavigationLink(destination: GameView()) {
+              Image(systemName: "arrow.counterclockwise.circle.fill")
+                .font(.system(size: 40))
+                .foregroundColor(EmojiMatch.green)
+            }
+          }
+          .padding(.top, 30)
         }
+        .padding(20)
+        .background(Color.white.opacity(0.95))
+        .cornerRadius(20)
       }
-      .onAppear() { handleFetchScores() }
+      .onAppear { handleFetchScores() }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .background(EmojiMatch.yellow01)
       .navigationBarBackButtonHidden(true)
     }
   }

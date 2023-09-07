@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GameView: View {
   @State private var countdown = 3
-  private let countdownColors = [EmojiMatch.yellow03, EmojiMatch.yellow02, EmojiMatch.yellow01]
+  private let countdownColors = [EmojiMatch.yellow04, EmojiMatch.yellow03, EmojiMatch.yellow02]
 
   @State var timer: Timer?
   private let totalTime = 60 * 2
@@ -192,7 +192,7 @@ struct GameView: View {
           HStack {
             Text("Combo  \(currentCombo)")
               .font(.custom("LOTTERIACHAB", size: 20))
-              .foregroundColor(EmojiMatch.yellow03)
+              .foregroundColor(Color.gray)
 
             Spacer()
 
@@ -200,7 +200,7 @@ struct GameView: View {
               NavigationLink(destination: ContentView()) {
                 Image(systemName: "house.circle.fill")
                   .font(.system(size: 40))
-                  .foregroundColor(EmojiMatch.yellow04)
+                  .foregroundColor(EmojiMatch.yellow03)
               }
 
               if isTimerRunning {
@@ -243,14 +243,12 @@ struct GameView: View {
             }
           }
 
-          VStack {
-            ProgressView(value: progress)
-              .scaleEffect(x: 1, y: 3, anchor: .center)
-              .accentColor(EmojiMatch.yellow03)
-          }
-          .padding(.top, 60)
-          .padding(.leading, 30)
-          .padding(.trailing, 30)
+          ProgressView(value: progress)
+            .scaleEffect(x: 1, y: 3, anchor: .center)
+            .accentColor(EmojiMatch.yellow03)
+            .padding(.top, 60)
+            .padding(.leading, 30)
+            .padding(.trailing, 30)
         }
 
         if countdown > 0 {

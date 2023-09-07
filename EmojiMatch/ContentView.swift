@@ -12,10 +12,12 @@ struct ContentView: View {
     UINavigationBar.setAnimationsEnabled(false)
   }
 
+  @State private var emojis = ["☁️", "🍋", "🎾", "💗"]
+
   var body: some View {
     NavigationStack {
       ZStack {
-        RandomEmojiView()
+        RandomEmojiView(emojis: $emojis)
 
         VStack {
           Image("logo")
@@ -26,7 +28,7 @@ struct ContentView: View {
           NavigationLink(destination: GameView()) {
             Text("시작하기")
               .frame(width: 130, height: 46)
-              .background(EmojiMatch.yellow03)
+              .background(EmojiMatch.yellow04)
               .cornerRadius(8)
               .font(.custom("LOTTERIACHAB", size: 24))
               .foregroundColor(EmojiMatch.yellow01)
