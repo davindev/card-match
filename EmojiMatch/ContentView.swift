@@ -12,12 +12,10 @@ struct ContentView: View {
     UINavigationBar.setAnimationsEnabled(false)
   }
 
-  @State private var emojis = ["☁️", "🍋", "🎾", "💗"]
-
   var body: some View {
     NavigationStack {
       ZStack {
-        RandomEmojiView(emojis: $emojis)
+        RandomEmojiView(emojis: ["☁️", "🍋", "🎾", "💗"])
 
         VStack {
           Image("logo")

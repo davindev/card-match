@@ -253,22 +253,16 @@ struct GameView: View {
 
         if countdown > 0 {
           VStack {
-            Text(String(countdown))
-              .font(.custom("LOTTERIACHAB", size: 180))
-              .foregroundColor(countdownColors[countdown - 1])
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
-              .shadow(color: EmojiMatch.yellow05, radius: 1)
+            TextBorderView(
+              text: Text(String(countdown))
+                .font(.custom("LOTTERIACHAB", size: 180))
+                .foregroundColor(countdownColors[countdown - 1]),
+              borderColor: EmojiMatch.yellow05,
+              borderWidth: 1.0
+            )
           }
           .frame(maxWidth: .infinity, maxHeight: .infinity)
-          .background(.black.opacity(0.4))
+          .background(Color.black.opacity(0.4))
         }
 
         // FIXME: NavigationLink의 isActive를 이용하여 페이지를 이동하는 방식은 deprecated 되었으나 navigationDestination이 정상 동작하지 않아 임시로 사용

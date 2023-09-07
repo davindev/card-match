@@ -14,8 +14,6 @@ struct Score: Hashable {
 }
 
 struct ScoreView: View {
-  @State private var emojis = ["🏆"]
-
   @Binding var finalScore: Int
   @State private var scores: [Score] = []
   private let scoresMaxCount = 20
@@ -107,42 +105,30 @@ struct ScoreView: View {
   var body: some View {
     NavigationStack {
       ZStack {
-        RandomEmojiView(emojis: $emojis)
+        RandomEmojiView(emojis: ["🏆"])
 
         VStack {
-          Text("Ranking")
-            .padding(.bottom, 10)
-            .font(.custom("LOTTERIACHAB", size: 60))
-            .foregroundColor(EmojiMatch.yellow03)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
-            .shadow(color: EmojiMatch.yellow05, radius: 0.6)
+          TextBorderView(
+            text: Text("Ranking")
+              .font(.custom("LOTTERIACHAB", size: 60))
+              .foregroundColor(EmojiMatch.yellow03),
+            borderColor: EmojiMatch.yellow05,
+            borderWidth: 0.6
+          )
+          .padding(.bottom, 10)
 
           VStack {
             ForEach(Array(scores.enumerated()), id: \.offset) { index, score in
               HStack {
                 if index <= 2 {
-                  Text("\(index + 1)등")
-                    .frame(width: 40)
-                    .font(.custom("LOTTERIACHAB", size: 20))
-                    .foregroundColor(rankingColor[index])
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
-                    .shadow(color: EmojiMatch.yellow05, radius: 0.2)
+                  TextBorderView(
+                    text: Text("\(index + 1)등")
+                      .frame(width: 40)
+                      .font(.custom("LOTTERIACHAB", size: 20))
+                      .foregroundColor(rankingColor[index]) as! Text,
+                    borderColor: EmojiMatch.yellow05,
+                    borderWidth: 0.2
+                  )
                 } else {
                   Text("\(index + 1)등")
                     .frame(width: 40)
