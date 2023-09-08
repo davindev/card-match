@@ -17,7 +17,7 @@ struct GameView: View {
   @State var isTimerRunning = false
   @State private var progress = 1.0
 
-  @State private var cards = EmojiMatch.cards
+  @State private var cards = EmojiMatch.cards.shuffled()
   private let allCardsCount = 30
   private let cardRows = Array(repeating: GridItem(.flexible(), spacing: 83), count: 6)
 

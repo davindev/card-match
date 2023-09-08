@@ -30,6 +30,8 @@ struct ScoreView: View {
         let db = try await Firestore
           .firestore()
           .collection("scores")
+          .order(by: "score", descending: true)
+          .order(by: "timestamp")
           .limit(to: scoresMaxCount)
           .getDocuments()
 
@@ -47,7 +49,7 @@ struct ScoreView: View {
 
         if shouldInsertFinalScore {
           for (index, newScore) in newScores.enumerated() {
-            if newScore.score >= finalScore {
+            if newScore.score < finalScore {
               newScores.insert(
                 Score(name: "", score: finalScore),
                 at: index
@@ -67,7 +69,7 @@ struct ScoreView: View {
           shouldInsertFinalScore = false
         }
 
-        scores = Array(newScores.reversed().prefix(scoresMaxCount))
+        scores = Array(newScores.prefix(scoresMaxCount))
       } catch {
         print("Error fetching scores: \(error)")
       }
@@ -92,7 +94,7 @@ struct ScoreView: View {
     if !isShownAlert {
       let db = Firestore.firestore()
 
-      db.collection("scores").addDocument(data: ["name": name, "score": score]) { error in
+      db.collection("scores").addDocument(data: ["name": name, "score": score, "timestamp": Timestamp() ]) { error in
         if let error = error {
           print("Error adding document: \(error)")
         } else {
@@ -117,54 +119,61 @@ struct ScoreView: View {
           )
           .padding(.bottom, 10)
 
-          VStack {
-            ForEach(Array(scores.enumerated()), id: \.offset) { index, score in
-              HStack {
-                if index <= 2 {
-                  TextBorderView(
-                    text: Text("\(index + 1)등")
-                      .frame(width: 40)
-                      .font(.custom("LOTTERIACHAB", size: 20))
-                      .foregroundColor(rankingColor[index]) as! Text,
-                    borderColor: EmojiMatch.yellow05,
-                    borderWidth: 0.2
-                  )
-                } else {
-                  Text("\(index + 1)등")
-                    .frame(width: 40)
-                }
-
-                if score.name == "" {
-                  HStack {
-                    VStack {
-                      TextField("닉네임", text: $name)
-                        .onChange(
-                          of: name,
-                          perform: { handleChangeName(value: $0) }
-                        )
-                      Divider()
-                        .frame(height: 2)
-                        .padding(-3)
-                        .background(EmojiMatch.gray)
+          ScrollView {
+            VStack {
+              ForEach(Array(scores.enumerated()), id: \.offset) { index, score in
+                HStack {
+                  VStack {
+                    if index <= 2 {
+                      TextBorderView(
+                        text: Text("\(index + 1)등")
+                          .font(.custom("LOTTERIACHAB", size: 20))
+                          .foregroundColor(rankingColor[index]),
+                        borderColor: EmojiMatch.yellow05,
+                        borderWidth: 0.2
+                      )
+                    } else {
+                      Text("\(index + 1)등")
                     }
-                    Button("저장") { handleSubmitScore(name: name, score: finalScore) }
-                      .alert("닉네임을 확인해주세요.", isPresented: $isShownAlert) {}
-                      .frame(width: 40, height: 26)
-                      .background(EmojiMatch.yellow04)
-                      .cornerRadius(8)
-                      .foregroundColor(EmojiMatch.yellow01)
+                  }
+                  .frame(width: 40)
+
+                  VStack {
+                    if score.name == "" {
+                      HStack {
+                        VStack {
+                          TextField("닉네임", text: $name)
+                            .onChange(
+                              of: name,
+                              perform: { handleChangeName(value: $0) }
+                            )
+                            .padding(.top, 2)
+                            .padding(.bottom, -7)
+
+                          Divider()
+                            .frame(height: 2)
+                            .background(EmojiMatch.gray)
+                        }
+                        Button("저장") { handleSubmitScore(name: name, score: finalScore) }
+                          .alert("닉네임을 확인해주세요.", isPresented: $isShownAlert) {}
+                          .frame(width: 40, height: 26)
+                          .background(EmojiMatch.yellow04)
+                          .cornerRadius(8)
+                          .foregroundColor(EmojiMatch.yellow01)
+                      }
+                    } else {
+                      Text(score.name)
+                    }
                   }
                   .frame(width: 150)
-                } else {
-                  Text(score.name)
-                    .frame(width: 150)
-                }
 
-                Text(String(score.score))
-                  .frame(width: 60)
+                  Text(String(score.score))
+                    .frame(width: 60)
+                }
+                .frame(height: 26)
               }
+              .padding(1)
             }
-            .padding(1)
           }
 
           HStack {
