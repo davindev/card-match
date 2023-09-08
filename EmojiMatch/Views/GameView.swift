@@ -12,8 +12,8 @@ struct GameView: View {
   private let countdownColors = [EmojiMatch.yellow04, EmojiMatch.yellow03, EmojiMatch.yellow02]
 
   @State var timer: Timer?
-  private let totalTime = 60 * 2
-  @State private var remainingTime = 60 * 2
+  private let totalTime = 60 * 1
+  @State private var remainingTime = 60 * 1
   @State var isTimerRunning = false
   @State private var progress = 1.0
 
@@ -272,6 +272,7 @@ struct GameView: View {
       }
       .onAppear { handleCountdown() }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .background(Color.white)
       .navigationBarBackButtonHidden(true)
     }
   }

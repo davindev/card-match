@@ -78,12 +78,12 @@ struct ScoreView: View {
 
   private func handleChangeName(value: String) {
     let newName = value
-        .filter { !$0.isWhitespace }
-        .replacingOccurrences(
-          of: EmojiMatch.nameRegex,
-          with: "",
-          options: .regularExpression
-        )
+//        .filter { !$0.isWhitespace }
+//        .replacingOccurrences(
+//          of: EmojiMatch.nameRegex,
+//          with: "",
+//          options: .regularExpression
+//        )
         .prefix(8)
     name = String(newName)
   }
@@ -134,6 +134,7 @@ struct ScoreView: View {
                       )
                     } else {
                       Text("\(index + 1)등")
+                        .foregroundColor(Color.black)
                     }
                   }
                   .frame(width: 40)
@@ -143,12 +144,13 @@ struct ScoreView: View {
                       HStack {
                         VStack {
                           TextField("닉네임", text: $name)
-                            .onChange(
-                              of: name,
-                              perform: { handleChangeName(value: $0) }
-                            )
+//                            .onChange(
+//                              of: name,
+//                              perform: { handleChangeName(value: $0) }
+//                            )
                             .padding(.top, 2)
                             .padding(.bottom, -7)
+                            .foregroundColor(Color.black)
 
                           Divider()
                             .frame(height: 2)
@@ -159,6 +161,7 @@ struct ScoreView: View {
                           .frame(width: 40, height: 26)
                           .background(EmojiMatch.yellow04)
                           .cornerRadius(8)
+                          .font(.system(size: 14))
                           .foregroundColor(EmojiMatch.yellow01)
                       }
                     } else {
@@ -169,6 +172,7 @@ struct ScoreView: View {
 
                   Text(String(score.score))
                     .frame(width: 60)
+                    .foregroundColor(Color.black)
                 }
                 .frame(height: 26)
               }
@@ -191,7 +195,7 @@ struct ScoreView: View {
           .padding(.top, 30)
         }
         .padding(20)
-        .background(Color.white.opacity(0.95))
+        .background(Color.white.opacity(0.85))
         .cornerRadius(20)
       }
       .onAppear { handleFetchScores() }
