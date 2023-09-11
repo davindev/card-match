@@ -79,7 +79,7 @@ struct ScoreView: View {
   }
 
   private func handleReceiveName(newName: String) -> String {
-    let value = newName.replacingOccurrences(of: " ", with: "", options: .regularExpression)
+    let value = newName.replacingOccurrences(of: " ", with: "")
 
     if value.count > nameMaxCount {
       return String(value.prefix(nameMaxCount))
