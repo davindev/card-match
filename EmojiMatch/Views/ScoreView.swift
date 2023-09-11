@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import FirebaseFirestore
 
 struct Score: Hashable {
@@ -22,6 +23,7 @@ struct ScoreView: View {
   private let rankingColor = [EmojiMatch.yellow03, EmojiMatch.yellow02, EmojiMatch.yellow01]
 
   @State private var name = ""
+  private let nameMaxCount = 8
   @State private var isShownAlert = false
 
   private func handleFetchScores() {
@@ -76,25 +78,23 @@ struct ScoreView: View {
     }
   }
 
-  private func handleChangeName(value: String) {
-    let newName = value
-//        .filter { !$0.isWhitespace }
-//        .replacingOccurrences(
-//          of: EmojiMatch.nameRegex,
-//          with: "",
-//          options: .regularExpression
-//        )
-        .prefix(8)
-    name = String(newName)
+  private func handleReceiveName(newName: String) -> String {
+    let value = newName.replacingOccurrences(of: " ", with: "", options: .regularExpression)
+
+    if value.count > nameMaxCount {
+      return String(value.prefix(nameMaxCount))
+    }
+
+    return value
   }
 
-  private func handleSubmitScore(name: String, score: Int) {
-    isShownAlert = name.count < 2
+  private func handleSubmitScore(newName: String, newScore: Int) {
+    isShownAlert = newName.count < 2
 
     if !isShownAlert {
       let db = Firestore.firestore()
 
-      db.collection("scores").addDocument(data: ["name": name, "score": score, "timestamp": Timestamp() ]) { error in
+      db.collection("scores").addDocument(data: ["name": newName, "score": newScore, "timestamp": Timestamp() ]) { error in
         if let error = error {
           print("Error adding document: \(error)")
         } else {
@@ -144,10 +144,9 @@ struct ScoreView: View {
                       HStack {
                         VStack {
                           TextField("닉네임", text: $name)
-//                            .onChange(
-//                              of: name,
-//                              perform: { handleChangeName(value: $0) }
-//                            )
+                            .onReceive(Just(name)) { _ in
+                              name = handleReceiveName(newName: name)
+                            }
                             .padding(.top, 2)
                             .padding(.bottom, -7)
                             .foregroundColor(Color.black)
@@ -156,8 +155,9 @@ struct ScoreView: View {
                             .frame(height: 2)
                             .background(EmojiMatch.gray)
                         }
-                        Button("저장") { handleSubmitScore(name: name, score: finalScore) }
-                          .alert("닉네임을 확인해주세요.", isPresented: $isShownAlert) {}
+
+                        Button("저장") { handleSubmitScore(newName: name, newScore: finalScore) }
+                          .alert("이름은 최소 2글자, 최대 8글자 입력이 가능합니다.", isPresented: $isShownAlert) {}
                           .frame(width: 40, height: 26)
                           .background(EmojiMatch.yellow04)
                           .cornerRadius(8)
@@ -166,6 +166,7 @@ struct ScoreView: View {
                       }
                     } else {
                       Text(score.name)
+                        .foregroundColor(Color.black)
                     }
                   }
                   .frame(width: 150)
